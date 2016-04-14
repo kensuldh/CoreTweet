@@ -20,25 +20,10 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using CoreTweet.Core;
 
-namespace CoreTweet.Core
+namespace CoreTweet
 {
-    /// <summary>
-    /// Represents a response that has rate limit.
-    /// </summary>
-    public interface ITwitterResponse
-    {
-        /// <summary>
-        /// Gets or sets the rate limit of the response.
-        /// </summary>
-        RateLimit RateLimit { get; set; }
-
-        /// <summary>
-        /// Gets or sets the JSON of the response.
-        /// </summary>
-        string Json { get; set; }
-    }
-
     /// <summary>
     /// The collection of response.
     /// </summary>
@@ -51,7 +36,7 @@ namespace CoreTweet.Core
         /// Initializes a new instance of the <see cref="CoreTweet.Core.ListedResponse&lt;T&gt;"/> class with a specified collection.
         /// </summary>
         /// <param name="collection">The collection whose elements are copied to the new <see cref="ListedResponse&lt;T&gt;"/>.</param>
-        public ListedResponse(List<T> collection)
+        public ListedResponse(IList<T> collection)
         {
             this.innerList = collection;
         }
@@ -62,14 +47,14 @@ namespace CoreTweet.Core
         /// <param name="collection">The collection whose elements are copied to the new <see cref="ListedResponse&lt;T&gt;"/>.</param>
         /// <param name="rateLimit">The rate limit.</param>
         /// <param name="json">The JSON.</param>
-        public ListedResponse(List<T> collection, RateLimit rateLimit, string json)
+        public ListedResponse(IList<T> collection, RateLimit rateLimit, string json)
             : this(collection)
         {
             this.RateLimit = rateLimit;
             this.Json = json;
         }
 
-        private readonly List<T> innerList;
+        private readonly IList<T> innerList;
 
         /// <summary>
         /// Gets or sets the rate limit of the response.
@@ -116,7 +101,7 @@ namespace CoreTweet.Core
         /// Initializes a new instance of the <see cref="CoreTweet.Core.DictionaryResponse&lt;TKey, TValue&gt;"/> class with a specified dictionary.
         /// </summary>
         /// <param name="dictionary">The dictionary whose elements are copied to the new <see cref="CoreTweet.Core.DictionaryResponse&lt;TKey, TValue&gt;"/>.</param>
-        public DictionaryResponse(Dictionary<TKey, TValue> dictionary)
+        public DictionaryResponse(IDictionary<TKey, TValue> dictionary)
         {
             this.innerDictionary = dictionary;
         }
@@ -127,14 +112,14 @@ namespace CoreTweet.Core
         /// <param name="dictionary">The dictionary whose elements are copied to the new <see cref="CoreTweet.Core.DictionaryResponse&lt;TKey, TValue&gt;"/>.</param>
         /// <param name="rateLimit">The rate limit.</param>
         /// <param name="json">The JSON.</param>
-        public DictionaryResponse(Dictionary<TKey, TValue> dictionary, RateLimit rateLimit, string json)
+        public DictionaryResponse(IDictionary<TKey, TValue> dictionary, RateLimit rateLimit, string json)
             : this(dictionary)
         {
             this.RateLimit = rateLimit;
             this.Json = json;
         }
 
-        private readonly Dictionary<TKey, TValue> innerDictionary;
+        private readonly IDictionary<TKey, TValue> innerDictionary;
 
         /// <summary>
         /// Gets or sets the rate limit of the response.
