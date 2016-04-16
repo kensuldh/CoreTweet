@@ -200,7 +200,7 @@ namespace CoreTweet.Core
         /// <para>The task object representing the asynchronous operation.</para>
         /// <para>The Result property on the task object returns a stream.</para>
         /// </returns>
-        public Task<AsyncResponse> SendRequestAsyncImpl(MethodType type, string url, IEnumerable<KeyValuePair<string, object>> parameters, CancellationToken cancellationToken)
+        internal Task<AsyncResponse> SendRequestAsyncImpl(MethodType type, string url, IEnumerable<KeyValuePair<string, object>> parameters, CancellationToken cancellationToken)
         {
             return this.SendRequestAsyncImpl(type, url, parameters, this.ConnectionOptions, cancellationToken);
         }

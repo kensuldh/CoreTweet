@@ -189,7 +189,7 @@ namespace CoreTweet
                 {
                     tcs.TrySetException(ex);
                 }
-            });
+            }, TaskContinuationOptions.ExecuteSynchronously);
             return tcs.Task;
         }
 
@@ -223,7 +223,7 @@ namespace CoreTweet
                 {
                     tcs.TrySetException(ex);
                 }
-            }, longRunning ? TaskContinuationOptions.LongRunning : TaskContinuationOptions.None);
+            }, longRunning ? TaskContinuationOptions.LongRunning | TaskContinuationOptions.ExecuteSynchronously : TaskContinuationOptions.ExecuteSynchronously);
             return tcs.Task;
         }
 
@@ -256,7 +256,41 @@ namespace CoreTweet
                 {
                     tcs.TrySetException(ex);
                 }
-            });
+            }, TaskContinuationOptions.ExecuteSynchronously);
+            return tcs.Task;
+        }
+
+        internal static Task Done(this Task source, Action action, CancellationToken cancellationToken)
+        {
+            var tcs = new TaskCompletionSource<Unit>();
+            source.ContinueWith(t =>
+            {
+                if (t.IsCanceled || cancellationToken.IsCancellationRequested)
+                {
+                    tcs.TrySetCanceled();
+                    return;
+                }
+
+                if (t.Exception != null)
+                {
+                    tcs.TrySetException(t.Exception.InnerExceptions.Count == 1 ? t.Exception.InnerException : t.Exception);
+                    return;
+                }
+
+                try
+                {
+                    action();
+                    tcs.TrySetResult(Unit.Default);
+                }
+                catch (OperationCanceledException)
+                {
+                    tcs.TrySetCanceled();
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            }, TaskContinuationOptions.ExecuteSynchronously);
             return tcs.Task;
         }
     }
