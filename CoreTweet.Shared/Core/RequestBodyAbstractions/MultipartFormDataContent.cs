@@ -147,11 +147,7 @@ namespace CoreTweet.Core.RequestBodyAbstractions
             action = () =>
             {
                 if (i >= this.items.Length)
-                {
-                    var tcs = new TaskCompletionSource<Unit>();
-                    tcs.SetResult(Unit.Default);
-                    return tcs.Task;
-                }
+                    return InternalUtils.CompletedTask;
 
                 var header = this.ItemHeadersBytes[i];
                 return writer(header, 0, header.Length, cancellationToken, r)

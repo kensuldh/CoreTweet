@@ -421,6 +421,21 @@ namespace CoreTweet.Core
                     }, cancellationToken);
             }, cancellationToken).Unwrap();
         }
+
+        private static Task completedTask;
+        internal static Task CompletedTask
+        {
+            get
+            {
+                if (completedTask == null)
+                {
+                    var tcs = new TaskCompletionSource<Unit>();
+                    tcs.SetResult(Unit.Default);
+                    completedTask = tcs.Task;
+                }
+                return completedTask;
+            }
+        }
 #endif
     }
 }

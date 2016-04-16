@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\IMultipartFormDataItemInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\JsonContent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\MultipartFormDataContent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\MultipartItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\StringContent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\ApiProviderBase.cs" />
