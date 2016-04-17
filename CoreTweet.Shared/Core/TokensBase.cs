@@ -30,6 +30,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using CoreTweet.Core.RequestBodyAbstractions;
 using CoreTweet.Rest;
 using CoreTweet.Streaming;
 
@@ -247,9 +248,9 @@ namespace CoreTweet.Core
         /// </summary>
         /// <param name="type">Type of HTTP request.</param>
         /// <param name="url">The URL.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>A string for Authorization header.</returns>
-        public abstract string CreateAuthorizationHeader(MethodType type, Uri url, IEnumerable<KeyValuePair<string, object>> parameters);
+        /// <param name="requestContent">The content of HTTP request.</param>
+        /// <returns>An Authorization header value.</returns>
+        public abstract AuthorizationHeaderValue CreateAuthorizationHeader(MethodType type, Uri url, IRequestContentInfo requestContent);
 
         private static object FormatObject(object x)
         {

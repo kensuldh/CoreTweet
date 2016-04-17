@@ -223,7 +223,7 @@ namespace CoreTweet
                 {
                     tcs.TrySetException(ex);
                 }
-            }, longRunning ? TaskContinuationOptions.LongRunning | TaskContinuationOptions.ExecuteSynchronously : TaskContinuationOptions.ExecuteSynchronously);
+            }, longRunning ? TaskContinuationOptions.LongRunning : TaskContinuationOptions.ExecuteSynchronously);
             return tcs.Task;
         }
 
@@ -292,6 +292,15 @@ namespace CoreTweet
                 }
             }, TaskContinuationOptions.ExecuteSynchronously);
             return tcs.Task;
+        }
+
+        internal static Task Finally(this Task source, Action action)
+        {
+            return source.ContinueWith(t =>
+            {
+                action?.Invoke();
+                return t;
+            }, TaskContinuationOptions.ExecuteSynchronously).Unwrap();
         }
     }
 #endif

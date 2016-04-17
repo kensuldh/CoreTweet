@@ -34,12 +34,12 @@ namespace CoreTweet.Core.RequestBodyAbstractions
 {
     public abstract class StringContent :
 #if NET35
-        IContentWriter
+        IRequestContentWriter
 #else
 #if !ASYNC_ONLY
-        IContentWriter,
+        IRequestContentWriter,
 #endif
-        IAsyncContentWriter
+        IAsyncRequestContentWriter
 #endif
     {
         public string ContentString { get; }

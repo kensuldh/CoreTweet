@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CoreTweet.Core;
+using CoreTweet.Core.RequestBodyAbstractions;
 
 namespace CoreTweet
 {
@@ -76,17 +77,30 @@ namespace CoreTweet
         /// </summary>
         /// <param name="type">The Type of HTTP request.</param>
         /// <param name="url">The URL.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>A string for Authorization header.</returns>
-        public override string CreateAuthorizationHeader(MethodType type, Uri url, IEnumerable<KeyValuePair<string, object>> parameters)
+        /// <param name="requestContent">The content of HTTP request.</param>
+        /// <returns>An Authorization header value.</returns>
+        public override AuthorizationHeaderValue CreateAuthorizationHeader(MethodType type, Uri url, IRequestContentInfo requestContent)
         {
-            var prms = Request.GenerateParameters(this.ConsumerKey, this.AccessToken);
-            var sigPrms = parameters != null
-                ? prms.Concat(parameters.Select(p => new KeyValuePair<string, string>(p.Key, p.Value.ToString())))
-                : prms;
-            var sgn = Request.GenerateSignature(this, type, url, sigPrms);
-            prms.Add("oauth_signature", sgn);
-            return "OAuth " + prms.Select(p => string.Format(@"{0}=""{1}""", Request.UrlEncode(p.Key), Request.UrlEncode(p.Value))).JoinToString(",");
+            var prmString = url.Query.TrimStart('?');
+            var stringContent = requestContent as StringContent;
+            if (stringContent != null && string.Equals(stringContent.ContentType, "application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase))
+                prmString += "&" + stringContent.ContentString;
+
+            var sigPrms = Request.GenerateParameters(this.ConsumerKey, this.AccessToken);
+            var sigBase = sigPrms
+                .Concat(prmString.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x =>
+                    {
+                        var s = x.Split('=');
+                        // Twitter の OAuth 実装のバグを回避するために、エスケープしない
+                        return new KeyValuePair<string, string>(s[0], s[1]);
+                    }));            
+            sigPrms.Add("oauth_signature", Request.GenerateSignature(this, type, url, sigBase));
+
+            return new AuthorizationHeaderValue(
+                "OAuth",
+                sigPrms.Select(p => string.Format(@"{0}=""{1}""", Request.UrlEncode(p.Key), Request.UrlEncode(p.Value))).JoinToString(",")
+            );
         }
 
         /// <summary>

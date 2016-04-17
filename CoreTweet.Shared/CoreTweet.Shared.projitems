@@ -13,9 +13,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Attribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConnectionOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\AuthorizationHeaderValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\FormUrlEncodedContent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\IContentInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\IContentWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\IRequestContentInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\IRequestContentWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\IMultipartItemContentWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\IMultipartFormDataItemInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\RequestBodyAbstractions\JsonContent.cs" />

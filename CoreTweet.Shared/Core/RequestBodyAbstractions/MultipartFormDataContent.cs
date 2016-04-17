@@ -34,7 +34,7 @@ using System.Threading.Tasks;
 
 namespace CoreTweet.Core.RequestBodyAbstractions
 {
-    public abstract class PlatformIndependentMultipartFormDataContent : IContentInfo
+    public abstract class PlatformIndependentMultipartFormDataContent : IRequestContentInfo
     {
         protected static byte[] NewLineBytes { get; } = { 0x0D, 0x0A };
 
@@ -92,7 +92,7 @@ namespace CoreTweet.Core.RequestBodyAbstractions
     }
 
 #if !ASYNC_ONLY
-    public class MultipartFormDataContent : PlatformIndependentMultipartFormDataContent, IContentWriter
+    public class MultipartFormDataContent : PlatformIndependentMultipartFormDataContent, IRequestContentWriter
     {
         private readonly IMultipartItemContentWriter[] items;
 
@@ -120,7 +120,7 @@ namespace CoreTweet.Core.RequestBodyAbstractions
 #endif
 
 #if !NET35
-    public class MultipartFormDataContentAsync : PlatformIndependentMultipartFormDataContent, IAsyncContentWriter
+    public class MultipartFormDataContentAsync : PlatformIndependentMultipartFormDataContent, IAsyncRequestContentWriter
     {
         private readonly IAsyncMultipartItemContentWriter[] items;
 

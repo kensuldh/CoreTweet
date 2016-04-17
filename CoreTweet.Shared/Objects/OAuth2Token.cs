@@ -22,8 +22,8 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using CoreTweet.Core;
+using CoreTweet.Core.RequestBodyAbstractions;
 
 namespace CoreTweet
 {
@@ -59,11 +59,11 @@ namespace CoreTweet
         /// </summary>
         /// <param name="type">The type of the HTTP request.</param>
         /// <param name="url">The URL.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns>A string for Authorization header.</returns>
-        public override string CreateAuthorizationHeader(MethodType type, Uri url, IEnumerable<KeyValuePair<string, object>> parameters)
+        /// <param name="requestContent">The content of HTTP request.</param>
+        /// <returns>An Authorization header value.</returns>
+        public override AuthorizationHeaderValue CreateAuthorizationHeader(MethodType type, Uri url, IRequestContentInfo requestContent)
         {
-            return "Bearer " + this.BearerToken;
+            return new AuthorizationHeaderValue("Bearer", this.BearerToken);
         }
 
         /// <summary>

@@ -21,14 +21,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
+#if !NET35
+using System.Threading;
+using System.Threading.Tasks;
+#endif
 
 namespace CoreTweet.Core.RequestBodyAbstractions
 {
-    public interface IContentInfo
+#if !ASYNC_ONLY
+    public interface IRequestContentWriter : IRequestContentInfo
     {
-        string ContentType { get; }
-        IEnumerable<KeyValuePair<string, string>> ContentTypeParameters { get; }
-        long? ContentLength { get; }
+        void WriteTo(Writer writer);
     }
+
+    public delegate void Writer(byte[] buffer, int offset, int count);
+#endif
+
+#if !NET35
+    public interface IAsyncRequestContentWriter : IRequestContentInfo
+    {
+        Task WriteToAsync(AsyncWriter writer, CancellationToken cancellationToken, UploadProgressReporter reporter);
+    }
+
+    public delegate Task AsyncWriter(byte[] buffer, int offset, int count, CancellationToken cancellationToken, WriteProgressReporter reporter);
+    public delegate void WriteProgressReporter(int bytesWritten);
+    public delegate void UploadProgressReporter(UploadProgressInfo progressInfo);
+#endif
 }

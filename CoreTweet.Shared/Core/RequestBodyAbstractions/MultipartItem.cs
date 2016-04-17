@@ -131,7 +131,7 @@ namespace CoreTweet.Core.RequestBodyAbstractions
 
     internal abstract class FileMultipartItem : MultipartItem
     {
-        private readonly Action<int> report;
+        protected const int bufferSize = 81920;
 
         protected FileMultipartItem(string name)
             : base(name) { }
@@ -152,8 +152,6 @@ namespace CoreTweet.Core.RequestBodyAbstractions
         }
 
         public override long? ContentLength => this.Content.CanSeek ? (long?)this.Content.Length : null;
-
-        private const int bufferSize = 81920;
 
 #if !ASYNC_ONLY
         public override void WriteTo(Writer writer)
@@ -247,16 +245,14 @@ namespace CoreTweet.Core.RequestBodyAbstractions
     {
         public IEnumerable<byte> Content { get; }
 
-        public ByteEnumerableMultipartItem(string key, IEnumerable<byte> content)
-            : base(key)
+        public ByteEnumerableMultipartItem(string name, IEnumerable<byte> content)
+            : base(name)
         {
             this.Content = content;
         }
 
         public override long? ContentLength => (this.Content as ICollection<byte>)?.Count;
-
-        private const int bufferSize = 81920;
-
+        
 #if !ASYNC_ONLY
         public override void WriteTo(Writer writer)
         {
@@ -312,28 +308,28 @@ namespace CoreTweet.Core.RequestBodyAbstractions
     }
 
 #if !(PCL || WIN_RT)
-    internal class FileInfoMultipartItem : StreamMultipartItem
+    internal class FileInfoMultipartItem : FileMultipartItem
     {
-        public FileInfoMultipartItem(string key, FileInfo content)
-            : base(key, content.OpenRead())
+        public FileInfo Content { get; }
+
+        public FileInfoMultipartItem(string name, FileInfo content)
+            : base(name)
         {
-            this.ContentLength = content.Length;
-            this.FileName = content.Name;
+            this.Content = content;
         }
 
-        public override long? ContentLength { get; }
-        public override string FileName { get; }
+        public override long? ContentLength => this.Content.Length;
+        public override string FileName => this.Content.Name;
 
 #if !ASYNC_ONLY
         public override void WriteTo(Writer writer)
         {
-            try
+            using (var stream = this.Content.OpenRead())
             {
-                base.WriteTo(writer);
-            }
-            finally
-            {
-                this.Content.Close();
+                var buffer = new byte[bufferSize];
+                int count;
+                while ((count = stream.Read(buffer, 0, bufferSize)) > 0)
+                    writer(buffer, 0, count);
             }
         }
 #endif
@@ -341,13 +337,24 @@ namespace CoreTweet.Core.RequestBodyAbstractions
 #if !NET35
         public override Task WriteToAsync(AsyncWriter writer, CancellationToken cancellationToken, WriteProgressReporter reporter)
         {
-            return base.WriteToAsync(writer, cancellationToken, reporter)
-                .ContinueWith(t =>
-                {
-                    this.Content.Close();
-                    return t;
-                }, TaskContinuationOptions.ExecuteSynchronously)
-                .Unwrap();
+            var stream = this.Content.OpenRead();
+            int bytesWritten = 0;
+            var buffer = new byte[bufferSize];
+            var r = reporter == null ? null : new WriteProgressReporter(x => reporter(bytesWritten + x));
+            Func<Task> action = null;
+            action = () =>
+            {
+                var count = stream.Read(buffer, 0, bufferSize);
+                if (count == 0) return InternalUtils.CompletedTask;
+                return writer(buffer, 0, count, cancellationToken, r)
+                    .Done(() =>
+                    {
+                        bytesWritten += count;
+                        return action();
+                    }, cancellationToken)
+                    .Unwrap();
+            };
+            return action().Finally(stream.Close);
         }
 #endif
     }
