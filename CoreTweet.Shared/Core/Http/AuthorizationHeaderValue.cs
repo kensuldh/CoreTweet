@@ -18,22 +18,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace CoreTweet.Core
+namespace CoreTweet.Core.Http
 {
     /// <summary>
     /// Represents authentication information in Authorization header values.
     /// </summary>
-    public struct AuthorizationHeaderValue
+    public class AuthorizationHeaderValue
     {
         /// <summary>
         /// Gets the authentication scheme.
         /// </summary>
-        public string Schema { get; set; }
+        public string Schema { get; }
 
         /// <summary>
         /// Gets the additional information necessary for achieving authentication.
         /// </summary>
-        public string Parameter { get; set; }
+        public string Parameter { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthorizationHeaderValue"/> class.

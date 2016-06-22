@@ -23,7 +23,7 @@
 
 using System;
 using CoreTweet.Core;
-using CoreTweet.Core.RequestBodyAbstractions;
+using CoreTweet.Core.Http;
 
 namespace CoreTweet
 {

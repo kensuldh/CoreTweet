@@ -30,7 +30,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 using System.Threading;
-using CoreTweet.Core.RequestBodyAbstractions;
+using CoreTweet.Core.Http;
 using CoreTweet.Rest;
 using CoreTweet.Streaming;
 
@@ -143,6 +143,7 @@ namespace CoreTweet.Core
         public StreamingApi Streaming => new StreamingApi(this);
         #endregion
 
+        //TODO: 絶対 null にさせない
         /// <summary>
         /// Gets or sets the options of the connection.
         /// </summary>

@@ -21,29 +21,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if !ASYNC_ONLY
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
+using System.Text;
 
-namespace CoreTweet.Core.RequestBodyAbstractions
+namespace CoreTweet.Core.Http
 {
-    public class JsonContent : StringContent
+    public class HttpRequest
     {
-        public JsonContent(object value)
-            : base(SerializeToJson(value))
-        { }
+        public MethodType Method { get; }
+        public Uri RequestUri { get; }
+        public ConnectionOptions ConnectionOptions { get; }
+        public IList<KeyValuePair<string, string>> CustomHeaders { get; } = new List<KeyValuePair<string, string>>();
+        public IRequestContentWriter Content { get; set; }
 
-        private static string SerializeToJson(object value)
+        public HttpRequest(MethodType method, Uri requestUri, ConnectionOptions options)
         {
-            var prm = value as IEnumerable<KeyValuePair<string, object>>;
-            if (prm != null && !(value is IDictionary<string, object>))
-            {
-                value = prm.ToDictionary(x => x.Key, x => x.Value);
-            }
-
-            return JsonConvert.SerializeObject(value);
+            if (requestUri == null)
+                throw new ArgumentNullException(nameof(requestUri));
+            this.Method = method;
+            this.RequestUri = requestUri;
+            this.ConnectionOptions = options ?? new ConnectionOptions();
         }
 
-        public override string ContentType => "application/json";
+        public HttpResponse Send()
+        {
+            throw new NotImplementedException(); //TODO
+        }
     }
 }
+#endif

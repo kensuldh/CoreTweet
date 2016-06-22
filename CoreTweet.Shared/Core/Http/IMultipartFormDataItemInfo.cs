@@ -21,24 +21,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if !NET35
-using System.Threading;
-using System.Threading.Tasks;
-#endif
-
-namespace CoreTweet.Core.RequestBodyAbstractions
+namespace CoreTweet.Core.Http
 {
-#if !ASYNC_ONLY
-    public interface IMultipartItemContentWriter : IMultipartFormDataItemInfo
+    public interface IMultipartFormDataItemInfo
     {
-        void WriteTo(Writer writer);
+        string Name { get; }
+        string FileName { get; }
+        string ContentType { get; }
+        long? ContentLength { get; }
     }
-#endif
-
-#if !NET35
-    public interface IAsyncMultipartItemContentWriter : IMultipartFormDataItemInfo
-    {
-        Task WriteToAsync(AsyncWriter writer, CancellationToken cancellationToken, WriteProgressReporter reporter);
-    }
-#endif
 }

@@ -22,13 +22,16 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
 
-namespace CoreTweet.Core.RequestBodyAbstractions
+namespace CoreTweet.Core.Http
 {
-    public interface IRequestContentInfo
+    public class FormUrlEncodedContent : StringContent
     {
-        string ContentType { get; }
-        IEnumerable<KeyValuePair<string, string>> ContentTypeParameters { get; }
-        long? ContentLength { get; }
+        public FormUrlEncodedContent(IEnumerable<KeyValuePair<string, string>> parameters)
+            : base(parameters.Select(x => Request.UrlEncode(x.Key) + "=" + Request.UrlEncode(x.Value)).JoinToString("&"))
+        { }
+
+        public override string ContentType => "application/x-www-form-urlencoded";
     }
 }

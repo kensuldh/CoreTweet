@@ -26,7 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 #endif
 
-namespace CoreTweet.Core.RequestBodyAbstractions
+namespace CoreTweet.Core.Http
 {
 #if !ASYNC_ONLY
     public interface IRequestContentWriter : IRequestContentInfo

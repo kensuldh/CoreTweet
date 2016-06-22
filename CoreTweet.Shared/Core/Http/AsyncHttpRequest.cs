@@ -21,13 +21,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace CoreTweet.Core.RequestBodyAbstractions
+#if !NET35
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CoreTweet.Core.Http
 {
-    public interface IMultipartFormDataItemInfo
+    public class AsyncHttpRequest
     {
-        string Name { get; }
-        string FileName { get; }
-        string ContentType { get; }
-        long? ContentLength { get; }
+        public MethodType Method { get; }
+        public Uri RequestUri { get; }
+        public ConnectionOptions ConnectionOptions { get; }
+        public IList<KeyValuePair<string, string>> CustomHeaders { get; } = new List<KeyValuePair<string, string>>();
+        public IAsyncRequestContentWriter Content { get; set; }
+
+        public AsyncHttpRequest(MethodType method, Uri requestUri, ConnectionOptions options)
+        {
+            if (requestUri == null)
+                throw new ArgumentNullException(nameof(requestUri));
+            this.Method = method;
+            this.RequestUri = requestUri;
+            this.ConnectionOptions = options ?? new ConnectionOptions();
+        }
+
+        //TODO: Task<AsyncHttpResponse> SendAsync リクエスト送信はプラットフォームごとに実装
     }
 }
+#endif

@@ -23,15 +23,27 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
-namespace CoreTweet.Core.RequestBodyAbstractions
+namespace CoreTweet.Core.Http
 {
-    public class FormUrlEncodedContent : StringContent
+    public class JsonContent : StringContent
     {
-        public FormUrlEncodedContent(IEnumerable<KeyValuePair<string, string>> parameters)
-            : base(parameters.Select(x => Request.UrlEncode(x.Key) + "=" + Request.UrlEncode(x.Value)).JoinToString("&"))
+        public JsonContent(object value)
+            : base(SerializeToJson(value))
         { }
 
-        public override string ContentType => "application/x-www-form-urlencoded";
+        private static string SerializeToJson(object value)
+        {
+            var prm = value as IEnumerable<KeyValuePair<string, object>>;
+            if (prm != null && !(value is IDictionary<string, object>))
+            {
+                value = prm.ToDictionary(x => x.Key, x => x.Value);
+            }
+
+            return JsonConvert.SerializeObject(value);
+        }
+
+        public override string ContentType => "application/json";
     }
 }
